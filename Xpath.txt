@@ -1,0 +1,62 @@
+
+# specify the tag being located
+	Xpath = //tagname[@attribute='value']
+
+or
+
+# * = locate all tags
+	Xpath = //*[@attribute='value']
+
+e.g. <tagname attribute='value' />
+
+-------------------------------------------
+<div class='featured-box'>
+  <b>Testing</b>
+</div>
+-------------------------------------------
+	e.g. xpath for label 'Testing' above is :
+	Xpath = //*[@class='featured-box']//*[text()='Testing']
+
+
+-------------------------------------------
+<input type='text' id='uid' name='firstname' />
+-------------------------------------------
+	e.g. Xpath for above is:
+	Xpath = //input[@id='uid']
+	Xpath = //input[@name='firstname']
+
+More example Xpaths:
+
+	Xpath = //input[@type='text']				
+	Xpath = //label[@id='message23']
+	Xpath = //input[@value='RESET']
+	Xpath = //*[@class='barone']
+	Xpath = //a[@href='http://demo.guru99.com/']
+	Xpath = //img[@src='//cdn.guru99.com/images/home/java.png']
+
+Contains can be used for dynamically changing ids:
+
+	Xpath = //*[contains(@name,'btn')] -- btn may change to btn23, btn24 etc
+	Xpath = //*[contains(@id,'message')] -- message may change to message23, message24 etc
+
+	Xpath = //*[contains(text(),'here')]
+	Xpath = //*[contains(@href,'google.com/')]	
+	
+AND / OR
+
+	Xpath = //input[@type='submit' and @name='btnLogin']
+	Xpath = //*[@type='submit' OR @name='btnReset']
+	
+
+Starts with
+
+	Xpath = //label[starts-with(@id,'message')]
+	
+Text
+
+	Xpath = //td[text()='Hello!'] # e.g. <ts align='left'>Hello!</td>
+	
+	
+	
+
+
