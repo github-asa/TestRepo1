@@ -1,0 +1,18 @@
+By Object
+=========
+
+driver.findElement(By by) and driver.findElements(By by)
+
+both methods accept a 'By' parameter
+
+e.g.
+
+IWebElement userName = driver.findElement(By.id("UserName"));
+
+// This can also be written as:
+By locator = By.id("UserName"); // returns a By Object and assigns it to locator
+IWebElement userName = driver.findElement(locator);
+
+// if no matching element is found then a NoSuchElementExeption is raised
+
+

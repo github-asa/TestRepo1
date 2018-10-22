@@ -1,0 +1,11 @@
+Different Types of Locator
+==========================
+
+driver.findElement(By.id("xx"));
+driver.findElement(By.name("xx"));
+driver.findElement(By.linktext("xx"));
+driver.findElement(By.name(""));
+driver.findElement(By.cssSelector(".cssclassname"));
+driver.findElement(By.tagName("h1"));
+driver.findElement(By.xpath("//xpath...."));
+
