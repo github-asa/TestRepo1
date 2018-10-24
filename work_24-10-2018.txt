@@ -1,0 +1,110 @@
+
+using System;
+using System.Text;
+using TechTalk.SpecFlow;
+using SpecFlowWebdriverTest.Extensions;
+using SpecFlowWebdriverTest.Helpers;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace SpecFlowWebdriverTest.Steps
+{
+    [Binding]
+    public sealed class BurgerMenuStepDef
+    {
+        IWebDriver driver = new ChromeDriver();
+        IWebElement elem = null;
+
+        [Given(@"I have navigated to '(.*)'")]
+        public void GivenIHaveNavigatedTo(string url)
+        {
+            driver.NavigateToURL(url);
+        }
+
+        [When(@"I press menu button")]
+        public void WhenIPressMunuButton()
+        {
+            By locator = By.XPath("//nav[@class='navbar navbar-light white mb-4']//button[@class='navbar-toggler toggler-example']");
+
+            elem = ScrollToView(locator);
+            elem.Click();
+        }
+
+        [Then(@"submenu should appear")]
+        public void ThenSubmenuShouldAppear()
+        {
+            VerifyMenuItems();
+        }
+
+
+        public void VerifyMenuItems()
+        {
+            By by = By.XPath("//nav[contains(@class, 'navbar navbar-light light-blue lighten-4')]//a[contains(@class, 'nav-link')]");
+
+            //By by = By.XPath("//div[contains(@class,'float-left')]//a");
+            //div[contains(@class,'float-left')]//a
+
+            //var e = driver.FindElements(by).Select(iw => iw.Text);
+
+            var e = driver.FindElements(by);
+
+            foreach (var elem in e)
+            {
+                ScrollToView(elem);
+
+                Console.WriteLine("Is the element displayed? : {0}", elem.Displayed.ToString());
+                Console.WriteLine("The text of the element is : ", elem.Text);
+
+                Console.WriteLine("------------------------------------------");
+                //Console.WriteLine("The text of the element is : ", elem.GetAttribute("innerHTML"));
+            }
+
+            Console.WriteLine("*** The submenu items should appear here.*** ");
+            //Console.WriteLine(e.ToString());
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        #region scrolling code
+
+        public IWebElement ScrollToView(By selector)
+        {
+            var element = driver.FindElement(selector, 10);
+            ScrollToView(element);
+            return element;
+        }
+
+        public void ScrollToView(IWebElement element)
+        {
+            if (element.Location.Y > 200)
+            {
+                ScrollTo(0, element.Location.Y - 100); // Make sure element is in the view but below the top navigation pane
+            }
+
+        }
+
+        public void ScrollTo(int xPosition = 0, int yPosition = 0)
+        {
+            var sc = String.Format("window.scrollTo({0}, {1})", xPosition, yPosition);
+            IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
+            js.ExecuteScript(sc);
+        }
+
+        #endregion
+    }
+}
