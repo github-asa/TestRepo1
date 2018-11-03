@@ -1,0 +1,387 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using J2BIOverseasOps.Extensions;
+using log4net;
+using NUnit.Framework;
+using OpenQA.Selenium;
+using TechTalk.SpecFlow;
+
+namespace J2BIOverseasOps.Pages.BuildingWork.Onsite
+{
+    internal class OnsiteRestaurantsPage : BuildingWorkCommon
+    {
+        private readonly ApiCalls _apiCall;
+        private readonly By _affectedRestaurantsMandatory = By.XPath("//p-message[@id='affectedRestaurants-validation']//span[2]");
+        private readonly By _affectedRestaurantsDropDown = By.XPath("//p-dropdown[@id='affectedRestaurants']");
+
+        //other restaurants
+        private readonly By _isThisNewFacility = By.XPath("//p-selectbutton[@id='isThisFacilityNew']");
+        private readonly By _isThisNewFacilityMandatory = By.XPath("//p-message[@id='isThisFacilityNew-validation']//span[2]");
+        private readonly By _otherRestuarantName=By.XPath("//input[@id='otherRestaurantName']");
+        private readonly By _otherRestuarantNameMandatory = By.XPath("//p-message[@id='otherRestaurantName-validation']//span[2]");
+
+        // is the work
+        private readonly By _typeOfWork = By.XPath("//p-selectbutton[@id='typeOfWork']");
+        private readonly By _typeOfWorkValidation = By.XPath("//p-message[@id='typeOfWork-validation']//span[2]");
+
+        // details of work
+        private readonly By _detailsOfWork = By.XPath("//textarea[@id='detailsAboutTheWork']");
+        private readonly By _detailsOfWorkValidation = By.XPath("//p-message[@id='detailsAboutTheWork-validation']");
+
+        // work involve major refit
+        private readonly By _workInvolvesMajorRefit = By.XPath("//p-selectbutton[@id='majorRefit']");
+        private readonly By _workInvolvesMajorRefitValidation = By.XPath("//p-message[@id='majorRefit-validation']//span[2]");
+
+        //how restauramcts affected
+        private readonly By _howRestaurantsAffectedDrpDwn=By.XPath("//p-dropdown[@id='howIsRestaurantAffected']");
+        private readonly By _howRestaurantsAffectedValidation = By.XPath("//p-message[@id='howIsRestaurantAffected-validation']//span[2]");
+        private readonly By _howRestaurantsAffectedDetails=By.XPath("//textarea[@id='howIsRestaurantAffectedDetails']");
+        private readonly By _howRestaurantsAffectedDetailsValidation = By.XPath("//p-message[@id='howIsRestaurantAffectedDetails-validation']");
+
+        // work affect board basis
+        private readonly By _workAffectBoardBasis = By.XPath("//p-selectbutton[@id='doesItAffectBoardBasis']");
+        private readonly By _workAffectBoardBasisValidation = By.XPath("//p-message[@id='doesItAffectBoardBasis-validation']");
+        private readonly By _workAffectBoardBasisDetails = By.XPath("//textarea[@id='doesItAffectBoardBasisDetails']");
+        private readonly By _workAffectBoardBasisDetailsValidation=By.XPath("//p-message[@id='doesItAffectBoardBasisDetails-validation']");
+
+        //Hotel Providing alternative arrangements
+        private readonly By _workProvidingAlternArrangements=By.XPath("//p-selectbutton[@id='alternativeArrangements']");
+        private readonly By _detailsOfAlternativeArrangements=By.XPath("//textarea[@id='alternativeArrangementsDetails']");
+        private readonly By _capacityOfAllResidents=By.XPath("//p-selectbutton[@id='alternativeHasCapacityForAll']");
+        private readonly By _detailsOfCapacityOfAllResidents=By.XPath("//textarea[@id='alternativeHasCapacityForAllDetails']");
+        private readonly By _workProvidingAlternArrangementsValidation = By.XPath("//p-message[@id='alternativeArrangementsDetails-validation']");
+        private readonly By _detailsOfAlternativeArrangementsValidation = By.XPath("//p-message[@id='alternativeArrangementsDetails-validation']");
+        private readonly By _capacityOfAllResidentsValidation = By.XPath("//p-message[@id='alternativeHasCapacityForAll-validation']");
+        private readonly By _detailsOfCapacityOfAllResidentsValidation = By.XPath("//p-message[@id='alternativeHasCapacityForAllDetails-validation']");
+
+        // Buttons
+        private readonly By _removeThisRestaurant = By.XPath("//p-button[@id='btnRemoveThisRestaurant']//button");
+        private readonly By _addThisRestaurant = By.XPath("//p-button[@id='btnAddAnotheRestaurant']//button");
+
+
+        public OnsiteRestaurantsPage(IWebDriver driver, ILog log, IRunData rundata) : base(driver, log, rundata)
+        {
+            _apiCall=new ApiCalls(rundata);
+        }
+
+
+        public void VerifyRestaurantsMandatoryMessage(Table table)
+        {
+            foreach (var row in table.Rows)
+            {
+                var field = row["field"];
+                var expectedError = row["error"];
+
+                switch (field.ToLower())
+                {
+                    case "select affected restaurants":
+                        VerifyBwFieldValidationErrorMessage(_affectedRestaurantsMandatory, expectedError);
+                        break;
+                    case "is this a new facility":
+                        VerifyBwFieldValidationErrorMessage(_isThisNewFacilityMandatory, expectedError);
+                        break;
+                    case "name of the facility":
+                        VerifyBwFieldValidationErrorMessage(_otherRestuarantNameMandatory, expectedError);
+                        break;
+                    case "is the restaurant work":
+                        VerifyBwFieldValidationErrorMessage(_typeOfWorkValidation, expectedError);
+                        break;
+                    case "details of work":
+                        VerifyBwFieldValidationErrorMessage(_detailsOfWorkValidation, expectedError);
+                        break;
+                    case "work involve major refit":
+                        VerifyBwFieldValidationErrorMessage(_workInvolvesMajorRefitValidation, expectedError);
+                        break;
+                    case "how is restaurant affected":
+                        VerifyBwFieldValidationErrorMessage(_howRestaurantsAffectedValidation,expectedError);
+                        break;
+                    case "how is restaurant affected details":
+                        VerifyBwFieldValidationErrorMessage(_howRestaurantsAffectedDetailsValidation, expectedError);
+                        break;
+                    case "work affect board basis":
+                        VerifyBwFieldValidationErrorMessage(_workAffectBoardBasisValidation, expectedError);
+                        break;
+                    case "work affect board basis details":
+                        VerifyBwFieldValidationErrorMessage(_workAffectBoardBasisDetailsValidation, expectedError);
+                        break;
+                    case "hotel providing alternative arrangements":
+                        VerifyBwFieldValidationErrorMessage(_workProvidingAlternArrangementsValidation, expectedError);
+                        break;
+                    case "details of alternative arrangements":
+                        VerifyBwFieldValidationErrorMessage(_detailsOfAlternativeArrangementsValidation, expectedError);
+                        break;
+                    case "does the alternative have capacity for all residents":
+                        VerifyBwFieldValidationErrorMessage(_capacityOfAllResidentsValidation, expectedError);
+                        break;
+                    case "details of capacity for all residents":
+                        VerifyBwFieldValidationErrorMessage(_detailsOfCapacityOfAllResidentsValidation, expectedError);
+                        break;
+                    default:
+                        Assert.Fail($"{field} is not a valid field");
+                        break;
+                }
+            }
+        }
+
+
+        public void VerifyListOfRestaurants()
+        {
+            var restaurants = _apiCall.GetListOfRestaurants(Destination,Property);
+            var expectedListOfRestaurants = new List<string>();
+            foreach (var restaurant in restaurants)
+            {
+                expectedListOfRestaurants.Add(restaurant.Name);
+            }
+            expectedListOfRestaurants.Add("Other");
+            var actualListOfRestaurants = Driver.GetAllDropDownOptions(_affectedRestaurantsDropDown);
+            Assert.AreEqual(actualListOfRestaurants,expectedListOfRestaurants,$"Expected list of restaurants {expectedListOfRestaurants} was not the same as actual {actualListOfRestaurants}");
+        }
+
+        public void VerifyListHowRestaurantsAffected(Table table)
+        {
+            var actualList = Driver.GetAllDropDownOptions(_howRestaurantsAffectedDrpDwn);
+            var expectedList = table.Rows.ToColumnList("how affected");
+            Assert.AreEqual(actualList, expectedList, $"Expected list  {expectedList} was not the same as actual {actualList}");
+        }
+
+        public void EnterOnSiteRestaurantsAnswers(Table table)
+        {
+            foreach (var row in table.Rows)
+            {
+                var question = row["question"];
+                var answer = row["answer"];
+                switch (question.ToLower())
+                {
+                    case "is this a new facility":
+                        Driver.ClickPSelectOption(_isThisNewFacility,answer);
+                        break;
+                    case "affected restaurant":
+                        Driver.SelectDropDownOption(_affectedRestaurantsDropDown, _getAffectedRestaurant(answer));
+                        break;
+                    case "is the restaurant work":
+                        Driver.ClickPSelectOption(_typeOfWork, answer);
+                        break;
+                    case "details of work":
+                        Driver.EnterText(_detailsOfWork,answer);
+                        break;
+                    case "work involve major refit":
+                        Driver.ClickPSelectOption(_workInvolvesMajorRefit,answer);
+                        break;
+                    case "how is restaurant affected":
+                        Driver.SelectDropDownOption(_howRestaurantsAffectedDrpDwn,answer);
+                        break;
+                    case "how is restaurant affected details":
+                        Driver.EnterText(_howRestaurantsAffectedDetails, answer);
+                        break;
+                    case "work affect board basis":
+                        Driver.ClickPSelectOption(_workAffectBoardBasis, answer);
+                        break;
+                    case "work affect board basis details":
+                        Driver.EnterText(_workAffectBoardBasisDetails, answer);
+                        break;
+                    case "name of the restaurant":
+                        Driver.EnterText(_otherRestuarantName, answer);
+                        break;
+                    case "hotel providing alternative arrangements":
+                        Driver.ClickPSelectOption(_workProvidingAlternArrangements,answer);
+                        break;
+                    case "details of alternative arrangements":
+                        Driver.EnterText(_detailsOfAlternativeArrangements,answer);
+                        break;
+                    case "does the alternative have capacity for all residents":
+                        Driver.ClickPSelectOption(_capacityOfAllResidents,answer);
+                        break;
+                    case "details of capacity for all residents":
+                        Driver.EnterText(_detailsOfCapacityOfAllResidents, answer);
+                        break;
+                    default:
+                        Assert.Fail($"{question} is not a valid field");
+                        break;
+                }
+            }
+        }
+
+        public void VerifyOnSiteRestaurantsAnswers(Table table)
+        {
+            foreach (var row in table.Rows)
+            {
+                var question = row["question"];
+                var answer = row["answer"];
+                switch (question.ToLower())
+                {
+                    case "is this a new facility":
+                        Driver.VerifySingleSelectedPOption(_isThisNewFacility, answer);
+                        break;
+                    case "affected restaurant":
+                        Driver.VerifySelectedDropDownOption(_affectedRestaurantsDropDown, _getAffectedRestaurant(answer));
+                        break;
+                    case "is the restaurant work":
+                        Driver.VerifyMultiSelectedPOption(_typeOfWork, answer.ConvertStringIntoList());
+                        break;
+                    case "details of work":
+                        Driver.VerifyInputBoxText(_detailsOfWork, answer);
+                        break;
+                    case "work involve major refit":
+                        Driver.VerifySingleSelectedPOption(_workInvolvesMajorRefit, answer);
+                        break;
+                    case "how is restaurant affected":
+                        Driver.VerifySelectedDropDownOption(_howRestaurantsAffectedDrpDwn,answer);
+                        break;
+                    case "how is restaurant affected details":
+                        Driver.VerifyInputBoxText(_howRestaurantsAffectedDetails, answer);
+                        break;
+                    case "work affect board basis":
+                        Driver.VerifySingleSelectedPOption(_workAffectBoardBasis, answer);
+                        break;
+                    case "work affect board basis details":
+                        Driver.VerifyInputBoxText(_workAffectBoardBasisDetails, answer);
+                        break;
+                    case "name of the restaurant":
+                        Driver.VerifyInputBoxText(_otherRestuarantName, answer);
+                        break;
+                    case "hotel providing alternative arrangements":
+                        Driver.VerifySingleSelectedPOption(_workProvidingAlternArrangements, answer);
+                        break;
+                    case "details of alternative arrangements":
+                        Driver.VerifyInputBoxText(_detailsOfAlternativeArrangements, answer);
+                        break;
+                    case "does the alternative have capacity for all residents":
+                        Driver.VerifySingleSelectedPOption(_capacityOfAllResidents, answer);
+                        break;
+                    case "details of capacity for all residents":
+                        Driver.VerifyInputBoxText(_detailsOfCapacityOfAllResidents, answer);
+                        break;
+                    default:
+                        Assert.Fail($"{question} is not a valid field");
+                        break;
+                }
+            }
+        }
+
+
+        public void  VerifyFieldsDisplayedOrNot(string displayedOrNot, Table table)
+        {
+            var expectedState = displayedOrNot == "displayed";
+            foreach (var row in table.Rows)
+            {
+                var expectedField = row["field"];
+                By element = null;
+                switch (expectedField.ToLower())
+                {
+                    case "is this a new facility":
+                        element = _isThisNewFacility;
+                        break;
+                    case "name of the facility":
+                        element = _otherRestuarantName;
+                        break;
+                    case "how is restaurant affected details":
+                        element = _howRestaurantsAffectedDetails;
+                        break;
+                    case "work affect board basis details":
+                        element = _workAffectBoardBasisDetails;
+                        break;
+                    case "hotel providing alternative arrangements":
+                        element = _workProvidingAlternArrangements;
+                        break;
+                    case "details of alternative arrangements":
+                        element = _detailsOfAlternativeArrangements;
+                        break;
+                    case "does the alternative have capacity for all residents":
+                        element = _capacityOfAllResidents;
+                        break;
+                    case "details of capacity for all residents":
+                        element = _detailsOfCapacityOfAllResidents;
+                        break;
+                    default:
+                        Assert.Fail($"{expectedField} is not a valid field");
+                        break;
+                }
+                Assert.AreEqual(Driver.WaitForItem(element, 1), expectedState);
+            }
+        }
+
+
+
+
+        public void VerifyRestaurantsBtnDisabled(string btnName, string enabledDisabled)
+        {
+            VerifyElementState(enabledDisabled, _getAddRemoveBtn(btnName));
+        }
+
+        public void ClickRestaurantsButton(string btnName)
+        {
+            Driver.ClickItem(_getAddRemoveBtn(btnName));
+        }
+
+
+        internal string _getAffectedRestaurant(string restaurant)
+        {
+            var restaurantName = "";
+            if (restaurant.ToLower() != "other")
+            {
+                var restaurantNumber = restaurant.GetIntOnly() - 1;
+                var listOfRestaurants = _apiCall.GetListOfRestaurants(Destination, Property);
+                restaurantName = listOfRestaurants[restaurantNumber].Name;
+            }
+            else
+            {
+                restaurantName = restaurant;
+            }
+            return restaurantName;
+        }
+
+
+        internal By _getAddRemoveBtn(string btnName)
+        {
+            By btnElement = null;
+            switch (btnName.ToLower())
+            {
+                case "remove this restaurant":
+                    btnElement = _removeThisRestaurant;
+                    break;
+                case "add another restaurant":
+                    btnElement = _addThisRestaurant;
+                    break;
+                default:
+                    Assert.Fail($"{btnName} is not a valid button");
+                    break;
+            }
+            return btnElement;
+        }
+
+        // populates static variable
+        public void GetListOfRestaurants()
+        {
+            ListOfRestaurants = _apiCall   // get list of all restaurants for the given property
+                .GetListOfRestaurants(Destination, Property)
+                .Select(r => r.Name)
+                .ToList();
+            ListOfRestaurants.Add("Other");
+        }
+
+        public void VerifyRestaurantsNotPresent(string excludesIncludes,string restaurant)
+        {
+            var restList = restaurant.ConvertStringIntoList(); // converyts expected restaurants to a List
+            var restaurantsIndex = restList           // get the indexes to ignore
+                .Select(StringExtensions.GetIntOnly)
+                .ToList();
+            var listOfActualRestaurants = Driver.GetAllDropDownOptions(_affectedRestaurantsDropDown);
+            var excludedRestaurants = restaurantsIndex.Select(i => ListOfRestaurants[i-1]).ToList();
+            if (excludesIncludes.ToLower()=="excludes")
+            {
+                for (var i = 0; i < excludedRestaurants.Count(); i++)
+                {
+                    Assert.True(listOfActualRestaurants.Contains(excludedRestaurants[i])==false);
+                }
+            }
+            else if (excludesIncludes.ToLower() == "includes")
+            {
+                for (var i = 0; i < excludedRestaurants.Count(); i++)
+                {
+                    Assert.True(listOfActualRestaurants.Contains(excludedRestaurants[i]));
+                }
+            }
+        }
+    }
+}
+
